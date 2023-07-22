@@ -43,7 +43,7 @@ services:
     image: bde2020/hive:2.3.2-postgresql-metastore
     container_name: hive-server
     depends_on:
-      - namenode	
+      - namenode
       - datanode
     env_file:
       - ./hadoop-hive.env
