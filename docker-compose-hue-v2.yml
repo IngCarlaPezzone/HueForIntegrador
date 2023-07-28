@@ -42,6 +42,7 @@ services:
   hive-server:
     image: bde2020/hive:2.3.2-postgresql-metastore
     container_name: hive-server
+    restart: on-failure:5
     depends_on:
       - namenode
       - datanode
@@ -58,6 +59,7 @@ services:
   hive-metastore:
     image: bde2020/hive:2.3.2-postgresql-metastore
     container_name: hive-metastore
+    restart: on-failure:5
     env_file:
       - ./hadoop-hive.env
     command: /opt/hive/bin/hive --service metastore
@@ -69,12 +71,14 @@ services:
   hive-metastore-postgresql:
     image: bde2020/hive-metastore-postgresql:2.3.0
     container_name: hive-metastore-postgresql
+    restart:on-failure:5
     ports:
       - "5432:5432"
 
   huedb:
     image: postgres:12.1-alpine
     container_name: huedb
+    restart: on-failure:5
     volumes:
       - pg_data:/var/lib/postgresl/data/
     ports:
@@ -87,6 +91,7 @@ services:
   hue:
     image: gethue/hue:4.6.0
     container_name: hue
+    restart: on-failure:5
     environment:
         SERVICE_PRECONDITION: "namenode:50070 datanode:50075 hive-metastore-postgresql:5432 resourcemanager:8088 hive-metastore:9083 huedb:5000"
     ports:
@@ -98,6 +103,7 @@ services:
   zoo:
     image: zookeeper:3.4.10
     container_name: zoo
+    restart: on-failure:5
     environment:
       ZOO_MY_ID: 1
       ZOO_SERVERS: server.1=0.0.0.0:2888:3888
@@ -106,6 +112,7 @@ services:
   hbase-master:
     image: bde2020/hbase-master:1.0.0-hbase1.2.6
     container_name: hbase-master
+    restart: on-failure:5
     hostname: hbase-master
     env_file:
       - ./hbase-distributed-local.env
@@ -116,6 +123,7 @@ services:
   hbase-region:
     image: bde2020/hbase-regionserver:1.0.0-hbase1.2.6
     container_name: hbase-regionserver
+    restart: on-failure:5
     hostname: hbase-regionserver
     env_file:
       - ./hbase-distributed-local.env
@@ -124,8 +132,10 @@ services:
       SERVICE_PRECONDITION: "namenode:9870 datanode:9864 zoo:2181 hbase-master:16010"
     ports:
       - 16030:16030
+      
   mongodb:
     container_name: mongodb
+    restart: on-failure:5
     ports:
       - "27017:27017"
     image: mongo:latest
@@ -134,8 +144,10 @@ services:
       - MONGODB_PASS="pass"
     volumes:
       - "mongodb-data:/data/db"
+      
   neo4j:
     container_name: neo4j
+    restart: on-failure:5
     image: neo4j:latest
     ports:
        - 7474:7474
@@ -146,6 +158,7 @@ services:
        
   zeppelin:
     container_name: zeppelin
+    restart: on-failure:5
     image: apache/zeppelin:0.9.0
     ports:
        - 8080:8080
